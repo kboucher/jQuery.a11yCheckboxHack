@@ -1,5 +1,5 @@
 /*!
- * jQuery a11yLabelToggle plugin
+ * jQuery a11yCheckboxHack plugin
  * Author: @kpboucher
  * Use this plugin to make LABEL tags focusable when using
  * the 'checkbox hack' to hide/show menus and content.
