@@ -1,5 +1,5 @@
 /*!
- * jQuery a11yCheckboxHack plugin
+ * jQuery a11yLabelToggle plugin
  * Author: @kpboucher
  * Use this plugin to make LABEL tags focusable when using
  * the 'checkbox hack' to hide/show menus and content.
@@ -8,7 +8,6 @@
  */
 
 ;(function ( $, window, document, undefined ) {
-
     'use strict';
 
     // Create the defaults once
@@ -33,13 +32,12 @@
     }
 
     A11yCheckboxHack.prototype = {
-
         init: function() {
             // You have access to the DOM element and the
             // options via the instance, e.g. this.element
             // and this.options
-            var ckbId = this.element.getAttribute('for'),
-                checkbox, newToggle;
+            var ckbId = this.element.attributes['for'].value,
+                $checkbox, $newToggle;
 
             if (ckbId && ckbId.replace(' ', '').length === 0) {
                 throw new Error(
@@ -48,32 +46,28 @@
             }
 
             // reference the relevant checkbox
-            checkbox = document.getElementById(ckbId);
+            $checkbox = $('#' + ckbId);
 
             // create new toggle element
-            newToggle = document.createElement('a');
-            newToggle.setAttribute('href', 'javascript:void()'); // href required for focus
+            $newToggle = $('<a />').attr('href', 'javascript:void()');
             $.each(this.element.attributes, function (index, value) {
-                if (value.name !== 'for') { // Don't transfer the for attribute
-                    newToggle.setAttribute(value.name, value.value ? value.value : value.name);
+                if (value.specified && value.name.toLowerCase() !== 'for') { // Don't transfer the for attribute or non-specified attributes
+                    $newToggle.attr(value.name, value.value ? value.value : value.name);
                 }
             });
-            newToggle.innerHTML = this.element.innerHTML;
+            $newToggle.html(this.element.innerHTML);
 
             // setup new toggle event handler
-            $(newToggle).on('click', function (e) {
+            $newToggle.on('click', function (e) {
                 e.preventDefault();
-                e.stopPropagation();
                 
-                checkbox.checked = !checkbox.checked;
+                $checkbox.attr('checked', !$checkbox.attr('checked'));
             });
 
             // replace LABEL tag with A tag
-            $(this.element).replaceWith(newToggle);
-
+            $(this.element).replaceWith($newToggle);
         }
     };
-
     // A really lightweight plugin wrapper around the constructor,
     // preventing against multiple instantiations
     $.fn[pluginName] = function ( options ) {
@@ -84,5 +78,4 @@
             }
         });
     };
-
 })( jQuery, window, document );
